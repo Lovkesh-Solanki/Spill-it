@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { createInitialState, gameReducer, makePlayers } from "@/lib/gameEngine";
 import type { Difficulty, GameState } from "@/lib/types";
 import PlayerSetup from "@/components/local/PlayerSetup";
@@ -38,11 +37,8 @@ export default function LocalGamePage() {
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col px-4 pb-16">
-      <header className="flex items-center justify-between py-6">
-        <Link href="/" className="font-display text-lg font-bold text-ink-100">
-          Spill<span className="text-dare">It</span>
-        </Link>
-        {game.screen !== "ended" && (
+      {game.screen !== "ended" && (
+        <div className="flex justify-end py-4">
           <button
             type="button"
             onClick={() => dispatch({ type: "END_GAME" })}
@@ -50,9 +46,8 @@ export default function LocalGamePage() {
           >
             End game
           </button>
-        )}
-      </header>
-
+        </div>
+      )}
       <main className="flex flex-1 flex-col items-center justify-center gap-8">
         {(game.screen === "spin" || game.screen === "choice") && (
           <>

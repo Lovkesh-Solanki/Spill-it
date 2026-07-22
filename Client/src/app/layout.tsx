@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Bricolage_Grotesque, Inter, Space_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/contexts/ThemeContext";
-import ThemeSwitcher from "@/components/shared/ThemeSwitcher";
+import Navbar from "@/components/shared/Navbar";
 
 const bricolage = Bricolage_Grotesque({
   variable: "--font-bricolage",
@@ -53,11 +53,9 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col relative">
         <div className="ambient-glow" aria-hidden="true" />
         <ThemeProvider>
-          <div className="fixed right-4 top-4 z-50">
-            <ThemeSwitcher />
-          </div>
           <div className="relative z-10 flex min-h-full flex-col flex-1">
-            {children}
+            <Navbar />
+            <div className="flex flex-1 flex-col">{children}</div>
           </div>
         </ThemeProvider>
       </body>
