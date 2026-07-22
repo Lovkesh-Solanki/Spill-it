@@ -23,6 +23,19 @@ export const metadata: Metadata = {
   title: "SpillIt — Truth or Dare",
   description:
     "Spin, choose, spill. A browser Truth or Dare game with AI-flavored prompts, forfeit tracking, and a punish mechanic.",
+  openGraph: {
+    title: "SpillIt — Truth or Dare",
+    description:
+      "Spin, choose, spill. A browser Truth or Dare game with AI-flavored prompts, forfeit tracking, and a punish mechanic.",
+    images: ["/og-image.png"],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "SpillIt — Truth or Dare",
+    description:
+      "Spin, choose, spill. A browser Truth or Dare game with AI-flavored prompts, forfeit tracking, and a punish mechanic.",
+    images: ["/og-image.png"],
+  },
 };
 
 export default function RootLayout({
