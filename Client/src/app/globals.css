@@ -1,0 +1,96 @@
+@import "tailwindcss";
+
+:root {
+  --color-void: #14101f;
+  --color-void-deep: #0c0915;
+  --color-surface: #1f1730;
+  --color-surface-raised: #291f3f;
+  --color-truth: #22e6c2;
+  --color-truth-dim: #16a892;
+  --color-dare: #ff3e8e;
+  --color-dare-dim: #cc2b6f;
+  --color-spicy: #ffb020;
+  --color-ink-100: #f3eefa;
+  --color-ink-400: #c9bcdd;
+  --color-ink-500: #a99bc2;
+  --color-ink-700: #6b5d85;
+}
+
+@theme inline {
+  --color-void: var(--color-void);
+  --color-void-deep: var(--color-void-deep);
+  --color-surface: var(--color-surface);
+  --color-surface-raised: var(--color-surface-raised);
+  --color-truth: var(--color-truth);
+  --color-truth-dim: var(--color-truth-dim);
+  --color-dare: var(--color-dare);
+  --color-dare-dim: var(--color-dare-dim);
+  --color-spicy: var(--color-spicy);
+  --color-ink-100: var(--color-ink-100);
+  --color-ink-400: var(--color-ink-400);
+  --color-ink-500: var(--color-ink-500);
+  --color-ink-700: var(--color-ink-700);
+  --font-display: var(--font-bricolage);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-space-mono);
+}
+
+body {
+  background: var(--color-void);
+  color: var(--color-ink-100);
+  font-family: var(--font-sans);
+}
+
+/* Ambient party-glow background: two slow-drifting radial blobs.
+   Fixed so it doesn't repaint per-screen; respects reduced motion. */
+.ambient-glow {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.ambient-glow::before,
+.ambient-glow::after {
+  content: "";
+  position: absolute;
+  width: 60vmax;
+  height: 60vmax;
+  border-radius: 9999px;
+  filter: blur(90px);
+  opacity: 0.28;
+}
+
+.ambient-glow::before {
+  background: var(--color-dare);
+  top: -20vmax;
+  left: -15vmax;
+  animation: drift-a 26s ease-in-out infinite alternate;
+}
+
+.ambient-glow::after {
+  background: var(--color-truth);
+  bottom: -22vmax;
+  right: -15vmax;
+  animation: drift-b 32s ease-in-out infinite alternate;
+}
+
+@keyframes drift-a {
+  to {
+    transform: translate(8vmax, 6vmax) scale(1.1);
+  }
+}
+
+@keyframes drift-b {
+  to {
+    transform: translate(-6vmax, -8vmax) scale(1.05);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ambient-glow::before,
+  .ambient-glow::after {
+    animation: none;
+  }
+}

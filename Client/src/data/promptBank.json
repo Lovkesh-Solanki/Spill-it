@@ -1,0 +1,109 @@
+{
+  "children": {
+    "truth": [
+      "What's the silliest thing you've ever done to make a friend laugh?",
+      "If you could have any animal as a pet, what would you pick and why?",
+      "What's your favorite thing about school?",
+      "What's the funniest dream you remember having?",
+      "If you were a superhero, what would your power be?",
+      "What's the most embarrassing thing that's happened to you at school?",
+      "What's your favorite food that most people think is weird?",
+      "Who is the funniest person you know?",
+      "What's a rule you wish your parents didn't have?",
+      "What's the best gift you've ever received?"
+    ],
+    "dare": [
+      "Do your best impression of a chicken for 20 seconds.",
+      "Talk in a robot voice until your next turn.",
+      "Try to lick your elbow.",
+      "Do 10 jumping jacks while singing your favorite song.",
+      "Balance a spoon on your nose for 15 seconds.",
+      "Make up a silly handshake and teach it to the group.",
+      "Do your best dinosaur roar and walk.",
+      "Draw a moustache on your finger and wear it for two rounds.",
+      "Speak in rhymes for the next two turns.",
+      "Do a cartwheel or your best attempt at one."
+    ]
+  },
+  "teens": {
+    "truth": [
+      "What's the most embarrassing thing in your search history this week?",
+      "Who was your first crush and what happened?",
+      "What's a lie you've told that you never got caught for?",
+      "What's the most awkward text you've ever sent to the wrong person?",
+      "What's a nickname you hate being called?",
+      "What's the pettiest reason you've ever been mad at a friend?",
+      "What app do you spend the most time on and are you embarrassed about it?",
+      "What's the last thing you cried about?",
+      "Who in this room would you want to be stuck in an elevator with?",
+      "What's the most trouble you've gotten into at school?"
+    ],
+    "dare": [
+      "Let the group go through your camera roll for 15 seconds.",
+      "Text your last contact 'guess what' and show the reply.",
+      "Do your best impression of someone in this room until they guess who.",
+      "Post a chosen-by-the-group emoji as your story for 10 minutes.",
+      "Let someone else send one text from your phone.",
+      "Sing the chorus of your most-played song right now.",
+      "Try to make the person to your left laugh without touching them.",
+      "Do your best red carpet walk across the room.",
+      "Reveal your phone's screen time for today.",
+      "Talk in an accent of the group's choosing for two rounds."
+    ]
+  },
+  "adult": {
+    "truth": [
+      "What's the boldest thing you've done to get someone's attention?",
+      "What's a green flag that instantly makes you interested in someone?",
+      "What's the most embarrassing thing that's happened to you on a date?",
+      "Who here would you trust to plan your birthday, no questions asked?",
+      "What's a habit of yours that a partner would need to accept fast?",
+      "What's the last white lie you told someone in this room?",
+      "What's a compliment you received that you still think about?",
+      "What's your most irrational fear?",
+      "What's a text you've drafted but never sent?",
+      "What's the most impulsive decision you've made this year?"
+    ],
+    "dare": [
+      "Give a genuine, specific compliment to the person on your left.",
+      "Let the group pick your caption for your next social post.",
+      "Do your best pickup line on the person across from you.",
+      "Reenact how you'd greet a celebrity crush walking in right now.",
+      "Show the group the last photo in your camera roll.",
+      "Let the group rename your contact for someone, and keep it that way till tomorrow.",
+      "Do a 30-second stand-up bit about someone in this room, gently.",
+      "Call a friend and tell them, deadpan, that you love them.",
+      "Swap seats and mannerisms with someone for one full round.",
+      "Let the group choose your drink order next time you're out."
+    ]
+  },
+  "spicy": {
+    "truth": [
+      "Who in this room would you swipe right on, no hesitation?",
+      "What's the most scandalous rumor you've heard about yourself?",
+      "What's a red flag you've ignored because someone was attractive?",
+      "What's the boldest DM you've ever sent or received?",
+      "What's the most spontaneous thing you've done for someone you liked?",
+      "Who was your most regrettable crush and why?",
+      "What's a confession you've never said out loud in this room?",
+      "What's the closest you've come to a public embarrassment over a crush?",
+      "What's a 'type' you keep going back to, even knowing better?",
+      "What's the boldest compliment you wish someone here would give you?"
+    ],
+    "dare": [
+      "Give your honest first impression of the person to your right.",
+      "Let the group pick who you have to compliment like you're flirting.",
+      "Whisper one nice, slightly bold thing to the person next to you.",
+      "Do your best slow-motion 'dramatic entrance' across the room.",
+      "Let the group choose your next profile picture from your camera roll.",
+      "Hold eye contact with the person across from you for 30 seconds, no laughing.",
+      "Reenact a rom-com confession scene with anyone in the room.",
+      "Let the group caption a photo of you and post it (with your OK).",
+      "Answer the next three questions only in a flirty tone.",
+      "Give a toast as if this were the best party of your life."
+    ]
+  }
+}
+
+
+
