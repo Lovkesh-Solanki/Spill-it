@@ -1,23 +1,35 @@
-// lib/themes.ts
-// Central definition of every SpillIt theme. Add new themes here — nothing
-// else needs to change. Colors are CSS custom properties applied to <html>
-// via data-theme, so any Tailwind class using var(--...) picks them up.
+// Central theme registry. Every theme fills the SAME color roles already
+// used throughout the app (void, surface, truth, dare, spicy, ink scale) —
+// see globals.css's `@theme inline` block. Because those Tailwind utilities
+// (bg-void, text-dare, border-surface-raised, etc.) reference the CSS custom
+// properties at runtime rather than baking in a hex value, swapping these
+// variables on <html> re-themes every existing component with zero changes
+// to component code.
+//
+// To add a theme: add an entry here. Nothing else needs to change.
+
+export type ThemeColors = {
+  void: string;
+  voidDeep: string;
+  surface: string;
+  surfaceRaised: string;
+  truth: string;
+  truthDim: string;
+  dare: string;
+  dareDim: string;
+  spicy: string;
+  ink100: string;
+  ink400: string;
+  ink500: string;
+  ink700: string;
+};
 
 export type Theme = {
   id: string;
   name: string;
-  secret?: boolean; // true = only unlockable via secret code, hidden from the normal switcher
-  code?: string; // required if secret is true — case-insensitive match
-  colors: {
-    bg: string; // page background
-    surface: string; // cards, prompt panel
-    surfaceAlt: string; // secondary panels (scoreboard, etc)
-    text: string; // primary text
-    textMuted: string;
-    accent: string; // primary brand accent (buttons, bottle pointer)
-    accentText: string; // text/icon color that sits on top of accent
-    border: string;
-  };
+  secret?: boolean; // hidden from the switcher until unlocked via code
+  code?: string; // case-insensitive; required when secret is true
+  colors: ThemeColors;
 };
 
 export const THEMES: Theme[] = [
@@ -25,75 +37,100 @@ export const THEMES: Theme[] = [
     id: "classic",
     name: "Classic",
     colors: {
-      bg: "#0B0B0C",
-      surface: "#151517",
-      surfaceAlt: "#1D1D20",
-      text: "#F5F5F5",
-      textMuted: "#9A9A9E",
-      accent: "#E11D2E", // the red from the spillit.com logo
-      accentText: "#FFFFFF",
-      border: "#2A2A2D",
+      void: "#14101f",
+      voidDeep: "#0c0915",
+      surface: "#1f1730",
+      surfaceRaised: "#291f3f",
+      truth: "#22e6c2",
+      truthDim: "#16a892",
+      dare: "#ff3e8e",
+      dareDim: "#cc2b6f",
+      spicy: "#ffb020",
+      ink100: "#f3eefa",
+      ink400: "#c9bcdd",
+      ink500: "#a99bc2",
+      ink700: "#6b5d85",
     },
   },
   {
-    id: "neon-party",
-    name: "Neon Party",
+    id: "neon-arcade",
+    name: "Neon Arcade",
     colors: {
-      bg: "#0A0A14",
-      surface: "#15142A",
-      surfaceAlt: "#1E1B3A",
-      text: "#F2F0FF",
-      textMuted: "#9C97C7",
-      accent: "#00E5C7", // cyan
-      accentText: "#0A0A14",
-      border: "#2E2A55",
+      void: "#05070f",
+      voidDeep: "#020308",
+      surface: "#0d1326",
+      surfaceRaised: "#141c38",
+      truth: "#baff29",
+      truthDim: "#8fcc17",
+      dare: "#ff2ec4",
+      dareDim: "#cc1f9c",
+      spicy: "#29e5ff",
+      ink100: "#eef4ff",
+      ink400: "#a9b8e0",
+      ink500: "#8593bd",
+      ink700: "#4a5480",
     },
   },
   {
-    id: "blush",
-    name: "Blush",
+    id: "sunset-blush",
+    name: "Sunset Blush",
     colors: {
-      bg: "#FFF6F8",
-      surface: "#FFFFFF",
-      surfaceAlt: "#FCE9EE",
-      text: "#3A2530",
-      textMuted: "#8A6E78",
-      accent: "#FF5C8A",
-      accentText: "#FFFFFF",
-      border: "#F3D3DD",
+      void: "#1f0f16",
+      voidDeep: "#150a0f",
+      surface: "#2e1620",
+      surfaceRaised: "#3d1e2b",
+      truth: "#ff8f6b",
+      truthDim: "#e06f4a",
+      dare: "#ff4f81",
+      dareDim: "#d13566",
+      spicy: "#ffcf5c",
+      ink100: "#fdf1f0",
+      ink400: "#e3bcc4",
+      ink500: "#c299a3",
+      ink700: "#7a5560",
     },
   },
   {
     id: "inferno",
     name: "Inferno",
     colors: {
-      bg: "#160A05",
-      surface: "#241008",
-      surfaceAlt: "#341509",
-      text: "#FFE9D6",
-      textMuted: "#C79A78",
-      accent: "#FF6A00",
-      accentText: "#160A05",
-      border: "#4A2210",
+      void: "#0f0806",
+      voidDeep: "#090403",
+      surface: "#1e0f0a",
+      surfaceRaised: "#2c150d",
+      truth: "#ffb454",
+      truthDim: "#e6953a",
+      dare: "#ff4b2b",
+      dareDim: "#d6331a",
+      spicy: "#ffe14d",
+      ink100: "#fff2e8",
+      ink400: "#e0b49a",
+      ink500: "#b88d74",
+      ink700: "#6e4a3a",
     },
   },
-  // Secret / code-unlocked theme. Change SPILL_SECRET_CODE below (or move it
-  // to an env var) before you ship — don't leave this literal string in a
-  // public repo if you want it to stay genuinely hidden.
+  // Secret theme — unlocked by entering the code in the switcher's hidden
+  // field. Change this code before shipping; anyone who reads the deployed
+  // JS bundle can find it, so treat it as an easter egg, not real security.
   {
     id: "gold-rush",
     name: "Gold Rush",
     secret: true,
     code: "SPILLGOLD",
     colors: {
-      bg: "#0C0A05",
-      surface: "#1A160A",
-      surfaceAlt: "#241D0D",
-      text: "#FBF3DB",
-      textMuted: "#B8A876",
-      accent: "#D4AF37",
-      accentText: "#0C0A05",
-      border: "#3A2F12",
+      void: "#0c0a05",
+      voidDeep: "#070603",
+      surface: "#191408",
+      surfaceRaised: "#241d0d",
+      truth: "#f0c75e",
+      truthDim: "#c9a445",
+      dare: "#b0242c",
+      dareDim: "#8c1c22",
+      spicy: "#ffe27a",
+      ink100: "#fbf3db",
+      ink400: "#d8c48e",
+      ink500: "#b8a876",
+      ink700: "#6b5c34",
     },
   },
 ];
@@ -107,4 +144,10 @@ export function findThemeById(id: string): Theme | undefined {
 export function findThemeByCode(code: string): Theme | undefined {
   const normalized = code.trim().toLowerCase();
   return THEMES.find((t) => t.secret && t.code?.toLowerCase() === normalized);
+}
+
+// Maps a camelCase key from ThemeColors to its CSS custom property name,
+// e.g. "voidDeep" -> "--color-void-deep".
+export function colorKeyToCssVar(key: string): string {
+  return `--color-${key.replace(/([A-Z])/g, "-$1").toLowerCase()}`;
 }

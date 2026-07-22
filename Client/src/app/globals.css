@@ -39,6 +39,7 @@ body {
   background: var(--color-void);
   color: var(--color-ink-100);
   font-family: var(--font-sans);
+  transition: background-color 300ms ease, color 300ms ease;
 }
 
 /* Ambient party-glow background: two slow-drifting radial blobs.

@@ -10,10 +10,11 @@ import ChoiceScreen from "@/components/local/ChoiceScreen";
 import PromptCard from "@/components/local/PromptCard";
 import Scoreboard from "@/components/local/Scoreboard";
 import EndGameSummary from "@/components/local/EndGameSummary";
+import ReportModal from "@/components/local/ReportModal";
 
 export default function LocalGamePage() {
   const [game, setGame] = useState<GameState | null>(null);
-  const [reportNote, setReportNote] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
 
   function dispatch(action: Parameters<typeof gameReducer>[1]) {
     setGame((prev) => (prev ? gameReducer(prev, action) : prev));
@@ -80,20 +81,25 @@ export default function LocalGamePage() {
               <PromptCard
                 active={game.active}
                 onResolve={(result) => {
-                  setReportNote(false);
+                  setReportOpen(false);
                   dispatch(
                     game.active?.isPunish
                       ? { type: "RESOLVE_PUNISH", result }
                       : { type: "RESOLVE", result }
                   );
                 }}
-                onReport={() => setReportNote(true)}
+                onReport={() => setReportOpen(true)}
               />
-              {reportNote && (
-                <p className="mt-[-1.5rem] text-center text-xs text-ink-500">
-                  Thanks — flagged for review. (Full report form coming
-                  soon.)
-                </p>
+              {reportOpen && (
+                <ReportModal
+                  active={game.active}
+                  onClose={() => setReportOpen(false)}
+                  onSubmit={() => {
+                    /* Phase 1: no backend yet — ReportModal already logs the
+                       payload client-side. Phase 2 will persist this to
+                       Supabase and feed the auto-hide/review-queue flow. */
+                  }}
+                />
               )}
             </div>
           )}
