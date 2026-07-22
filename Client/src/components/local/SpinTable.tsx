@@ -15,7 +15,7 @@ interface Props {
 const SIZE = 400;
 const CENTER = SIZE / 2;
 const NODE_RADIUS = 150;
-const SPIN_MS = 2200;
+const SPIN_MS = 4000;
 
 export default function SpinTable({
   players,
