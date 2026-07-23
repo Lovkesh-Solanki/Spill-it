@@ -95,3 +95,120 @@ body {
     animation: none;
   }
 }
+
+/* Premium theme particle layer (petals / stars / embers). Sits above the
+   ambient glow but below page content. Positions/timings come from
+   ThemeParticles.tsx as CSS custom properties per span, so this file only
+   defines the animation shapes/keyframes, not the layout. */
+.theme-particles {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  left: var(--left);
+  top: -6vh;
+  opacity: 0;
+}
+
+/* Petals — soft falling shape with drift + rotation (Cherry Blossom, Wisteria Rain) */
+.particle-petals {
+  width: calc(10px * var(--scale, 1));
+  height: calc(10px * var(--scale, 1));
+  background: var(--color-truth);
+  border-radius: 0% 60% 0% 60%;
+  animation: petal-fall var(--duration) linear var(--delay) infinite;
+}
+
+.particle-petals:nth-child(3n) {
+  background: var(--color-dare);
+}
+
+.particle-petals:nth-child(5n) {
+  background: var(--color-spicy);
+}
+
+@keyframes petal-fall {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.75;
+  }
+  90% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translate(var(--drift), 112vh) rotate(340deg);
+    opacity: 0;
+  }
+}
+
+/* Stars — fixed twinkling points, no fall (Moonlit Vow, Starlit Promise) */
+.particle-stars {
+  top: var(--top);
+  width: calc(3px * var(--scale, 1));
+  height: calc(3px * var(--scale, 1));
+  border-radius: 9999px;
+  background: var(--color-ink-100);
+  box-shadow: 0 0 6px 1px var(--color-truth);
+  animation: star-twinkle var(--duration) ease-in-out var(--delay) infinite;
+}
+
+.particle-stars:nth-child(4n) {
+  box-shadow: 0 0 6px 1px var(--color-spicy);
+}
+
+@keyframes star-twinkle {
+  0%,
+  100% {
+    opacity: 0.15;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.3);
+  }
+}
+
+/* Embers — rising glowing sparks (Crimson Thread) */
+.particle-embers {
+  top: auto;
+  bottom: -6vh;
+  width: calc(5px * var(--scale, 1));
+  height: calc(5px * var(--scale, 1));
+  border-radius: 9999px;
+  background: var(--color-dare);
+  box-shadow: 0 0 8px 2px var(--color-dare);
+  animation: ember-rise var(--duration) ease-in var(--delay) infinite;
+}
+
+.particle-embers:nth-child(3n) {
+  background: var(--color-spicy);
+  box-shadow: 0 0 8px 2px var(--color-spicy);
+}
+
+@keyframes ember-rise {
+  0% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate(var(--drift), -108vh);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-particles {
+    display: none;
+  }
+}

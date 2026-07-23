@@ -81,6 +81,17 @@ export default function ThemeSwitcher() {
                     aria-hidden
                   />
                   {t.name}
+                  {t.tier === "premium" && (
+                    <span
+                      className="rounded-full px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-widest"
+                      style={{
+                        color: "var(--color-void-deep)",
+                        backgroundColor: "var(--color-spicy)",
+                      }}
+                    >
+                      ✦ premium
+                    </span>
+                  )}
                   {t.id === theme.id && (
                     <span className="ml-auto font-mono text-[10px] uppercase tracking-widest text-ink-700">
                       current

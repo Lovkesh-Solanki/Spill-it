@@ -24,11 +24,15 @@ export type ThemeColors = {
   ink700: string;
 };
 
+export type ParticleKind = "petals" | "stars" | "embers";
+
 export type Theme = {
   id: string;
   name: string;
   secret?: boolean; // hidden from the switcher until unlocked via code
   code?: string; // case-insensitive; required when secret is true
+  tier: "free" | "premium"; // premium = paid tier (foundation for future gating)
+  particle?: ParticleKind; // decorative animated layer for premium themes
   colors: ThemeColors;
 };
 
@@ -36,6 +40,7 @@ export const THEMES: Theme[] = [
   {
     id: "classic",
     name: "Classic",
+    tier: "free",
     colors: {
       void: "#14101f",
       voidDeep: "#0c0915",
@@ -55,6 +60,7 @@ export const THEMES: Theme[] = [
   {
     id: "neon-arcade",
     name: "Neon Arcade",
+    tier: "free",
     colors: {
       void: "#05070f",
       voidDeep: "#020308",
@@ -74,6 +80,7 @@ export const THEMES: Theme[] = [
   {
     id: "sunset-blush",
     name: "Sunset Blush",
+    tier: "free",
     colors: {
       void: "#1f0f16",
       voidDeep: "#150a0f",
@@ -93,6 +100,7 @@ export const THEMES: Theme[] = [
   {
     id: "inferno",
     name: "Inferno",
+    tier: "free",
     colors: {
       void: "#0f0806",
       voidDeep: "#090403",
@@ -117,6 +125,7 @@ export const THEMES: Theme[] = [
     name: "Gold Rush",
     secret: true,
     code: "SPILLGOLD",
+    tier: "free",
     colors: {
       void: "#0c0a05",
       voidDeep: "#070603",
@@ -131,6 +140,120 @@ export const THEMES: Theme[] = [
       ink400: "#d8c48e",
       ink500: "#b8a876",
       ink700: "#6b5c34",
+    },
+  },
+
+  // ---------------------------------------------------------------------
+  // Premium tier — romantic / anime-inspired palettes with an animated
+  // decorative particle layer (see ThemeParticles.tsx). These are the
+  // foundation for a future paid-theme model: `tier: "premium"` doesn't
+  // gate access on its own yet (no billing is wired up), it just marks
+  // them so the switcher can badge them and a paywall can hook in later
+  // without touching the registry shape again.
+  // ---------------------------------------------------------------------
+  {
+    id: "cherry-blossom",
+    name: "Cherry Blossom",
+    tier: "premium",
+    particle: "petals",
+    colors: {
+      void: "#2a1420",
+      voidDeep: "#1c0c15",
+      surface: "#3d1f2e",
+      surfaceRaised: "#4d2839",
+      truth: "#ffb7c5",
+      truthDim: "#e0899d",
+      dare: "#ff6b9d",
+      dareDim: "#d94f80",
+      spicy: "#ffcf6b",
+      ink100: "#fff1f5",
+      ink400: "#e8b8c8",
+      ink500: "#c98fa3",
+      ink700: "#7a4a5c",
+    },
+  },
+  {
+    id: "moonlit-vow",
+    name: "Moonlit Vow",
+    tier: "premium",
+    particle: "stars",
+    colors: {
+      void: "#0b0f2e",
+      voidDeep: "#05071a",
+      surface: "#161b3d",
+      surfaceRaised: "#202650",
+      truth: "#c9b6ff",
+      truthDim: "#a68ee0",
+      dare: "#7d9dff",
+      dareDim: "#5c7ce0",
+      spicy: "#ffe9a8",
+      ink100: "#f0eeff",
+      ink400: "#c3c2e8",
+      ink500: "#9a99c2",
+      ink700: "#565580",
+    },
+  },
+  {
+    id: "crimson-thread",
+    name: "Crimson Thread",
+    tier: "premium",
+    particle: "embers",
+    colors: {
+      void: "#1f0a0a",
+      voidDeep: "#120505",
+      surface: "#2e0f0f",
+      surfaceRaised: "#3d1515",
+      truth: "#ff8a00",
+      truthDim: "#d9720a",
+      dare: "#ff4d4d",
+      dareDim: "#d93a3a",
+      spicy: "#ffd166",
+      ink100: "#fff0eb",
+      ink400: "#e0aa9e",
+      ink500: "#b87d70",
+      ink700: "#6b3f38",
+    },
+  },
+  {
+    id: "wisteria-rain",
+    name: "Wisteria Rain",
+    tier: "premium",
+    particle: "petals",
+    colors: {
+      void: "#1a1230",
+      voidDeep: "#100b20",
+      surface: "#251a42",
+      surfaceRaised: "#302254",
+      truth: "#b39ddb",
+      truthDim: "#9075c2",
+      dare: "#8e7cc3",
+      dareDim: "#6f5ea3",
+      spicy: "#a8d8ff",
+      ink100: "#f3edff",
+      ink400: "#c8bce0",
+      ink500: "#a397c2",
+      ink700: "#5e5480",
+    },
+  },
+  {
+    id: "starlit-promise",
+    name: "Starlit Promise",
+    tier: "premium",
+    particle: "stars",
+    colors: {
+      void: "#0a0e27",
+      voidDeep: "#050714",
+      surface: "#131a3d",
+      surfaceRaised: "#1c2450",
+      truth: "#ffd76e",
+      truthDim: "#e0b84f",
+      dare: "#a78bfa",
+      dareDim: "#8768e0",
+      spicy: "#6ee7ff",
+      ink100: "#f5f0ff",
+      ink400: "#c7bfe0",
+      ink500: "#9d94bd",
+      ink700: "#565073",
     },
   },
 ];
