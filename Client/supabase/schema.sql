@@ -16,8 +16,14 @@ create extension if not exists pgcrypto;
 create table if not exists public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
   display_name text not null,
+  accepted_terms_at timestamptz, -- set at sign-up time from auth metadata; null = pre-dates this column
   created_at timestamptz not null default now()
 );
+
+-- The table above already exists in the live project (schema.sql has been
+-- run before), so CREATE TABLE IF NOT EXISTS won't retroactively add this
+-- column on its own — this line is what actually applies it.
+alter table public.profiles add column if not exists accepted_terms_at timestamptz;
 
 alter table public.profiles enable row level security;
 
@@ -31,15 +37,22 @@ create policy "users update own profile"
   on public.profiles for update
   using (auth.uid() = id);
 
--- Auto-create a profile row whenever someone signs up.
+-- Auto-create a profile row whenever someone signs up. accepted_terms_at
+-- comes from auth metadata set in the sign-up Server Action at the moment
+-- the T&C checkbox is validated — so this is a server-set timestamp, not a
+-- client-supplied one, even though it travels through raw_user_meta_data.
 create or replace function public.handle_new_user()
 returns trigger
 language plpgsql
 security definer set search_path = public
 as $$
 begin
-  insert into public.profiles (id, display_name)
-  values (new.id, coalesce(new.raw_user_meta_data->>'display_name', split_part(new.email, '@', 1)));
+  insert into public.profiles (id, display_name, accepted_terms_at)
+  values (
+    new.id,
+    coalesce(new.raw_user_meta_data->>'display_name', split_part(new.email, '@', 1)),
+    (new.raw_user_meta_data->>'accepted_terms_at')::timestamptz
+  );
   return new;
 end;
 $$;

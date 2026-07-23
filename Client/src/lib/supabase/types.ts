@@ -13,9 +13,20 @@ export type Database = {
   public: {
     Tables: {
       profiles: {
-        Row: { id: string; display_name: string; created_at: string };
-        Insert: { id: string; display_name: string; created_at?: string };
+        Row: {
+          id: string;
+          display_name: string;
+          accepted_terms_at: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id: string;
+          display_name: string;
+          accepted_terms_at?: string | null;
+          created_at?: string;
+        };
         Update: { display_name?: string };
+        Relationships: [];
       };
       rooms: {
         Row: {
@@ -36,6 +47,7 @@ export type Database = {
           verified_only?: boolean;
           expiry_at?: string | null;
         };
+        Relationships: [];
       };
       room_memberships: {
         Row: {
@@ -49,6 +61,7 @@ export type Database = {
         };
         Insert: never; // always go through the join_room() RPC
         Update: { is_muted?: boolean };
+        Relationships: [];
       };
       chat_messages: {
         Row: {
@@ -62,6 +75,7 @@ export type Database = {
         };
         Insert: { room_id: string; user_id: string; content: string };
         Update: never;
+        Relationships: [];
       };
       reports: {
         Row: {
@@ -80,6 +94,7 @@ export type Database = {
           details?: string | null;
         };
         Update: never;
+        Relationships: [];
       };
       game_sessions: {
         Row: {
@@ -101,6 +116,7 @@ export type Database = {
           created_by: string;
         };
         Update: never;
+        Relationships: [];
       };
       players: {
         Row: {
@@ -116,6 +132,7 @@ export type Database = {
           user_id?: string | null;
         };
         Update: { forfeit_count?: number };
+        Relationships: [];
       };
       prompt_logs: {
         Row: {
@@ -137,6 +154,7 @@ export type Database = {
           result: "forfeit" | "done";
         };
         Update: never;
+        Relationships: [];
       };
     };
     Views: {
@@ -153,6 +171,7 @@ export type Database = {
           created_at: string;
           has_password: boolean;
         };
+        Relationships: [];
       };
     };
     Functions: {

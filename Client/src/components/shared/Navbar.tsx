@@ -3,13 +3,21 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import ThemeSwitcher from "@/components/shared/ThemeSwitcher";
+import { signOutAction } from "@/app/auth/actions";
 
 const LINKS = [
   { href: "/", label: "Home" },
   { href: "/play/local", label: "Play" },
 ];
 
-export default function Navbar() {
+type Props = {
+  // Passed down from the root layout, which reads the session server-side
+  // via lib/supabase/server — see layout.tsx. Kept minimal on purpose;
+  // Navbar only needs enough to render, not the full profile row.
+  user: { displayName: string } | null;
+};
+
+export default function Navbar({ user }: Props) {
   const pathname = usePathname();
 
   return (
@@ -38,7 +46,32 @@ export default function Navbar() {
           })}
         </nav>
 
-        <ThemeSwitcher />
+        <div className="flex items-center gap-2">
+          <ThemeSwitcher />
+
+          {user ? (
+            <div className="flex items-center gap-2">
+              <span className="hidden font-mono text-xs uppercase tracking-widest text-ink-400 sm:inline">
+                {user.displayName}
+              </span>
+              <form action={signOutAction}>
+                <button
+                  type="submit"
+                  className="rounded-full border border-surface-raised px-3 py-1.5 font-mono text-xs uppercase tracking-widest text-ink-500 transition hover:border-ink-700 hover:text-ink-100"
+                >
+                  Sign out
+                </button>
+              </form>
+            </div>
+          ) : (
+            <Link
+              href="/login"
+              className="rounded-full bg-dare px-3 py-1.5 font-display text-xs font-bold text-void-deep transition hover:bg-dare-dim"
+            >
+              Sign in
+            </Link>
+          )}
+        </div>
       </div>
     </header>
   );

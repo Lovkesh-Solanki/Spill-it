@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import Navbar from "@/components/shared/Navbar";
 import ThemeParticles from "@/components/shared/ThemeParticles";
+import { createClient } from "@/lib/supabase/server";
 
 const bricolage = Bricolage_Grotesque({
   variable: "--font-bricolage",
@@ -41,11 +42,31 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Reads the session from cookies (kept fresh by middleware.ts) so the
+  // Navbar's signed-in/out state is correct on first paint — no flash of
+  // the wrong state, no client-side fetch needed. Auth actions call
+  // revalidatePath("/", "layout") on sign-in/out specifically so this
+  // re-runs immediately after those, without a full reload.
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  let displayName: string | null = null;
+  if (user) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("display_name")
+      .eq("id", user.id)
+      .single();
+    displayName = profile?.display_name ?? null;
+  }
+
   return (
     <html
       lang="en"
@@ -56,7 +77,7 @@ export default function RootLayout({
         <ThemeProvider>
           <ThemeParticles />
           <div className="relative z-10 flex min-h-full flex-col flex-1">
-            <Navbar />
+            <Navbar user={displayName ? { displayName } : null} />
             <div className="flex flex-1 flex-col">{children}</div>
           </div>
         </ThemeProvider>
