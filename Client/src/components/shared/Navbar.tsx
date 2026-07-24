@@ -23,8 +23,9 @@ export default function Navbar({ user }: Props) {
   return (
     <header className="sticky top-0 z-40 border-b border-surface-raised bg-void/80 backdrop-blur">
       <div className="mx-auto flex w-full max-w-5xl items-center justify-between px-4 py-3">
-        <Link href="/" className="font-display text-lg font-bold text-ink-100">
-          Spill<span className="text-dare">It</span>
+        <Link href="/" className="flex items-center" aria-label="SpillIt home">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/header-logo.svg" alt="" width={120} height={34} className="h-8 w-auto" />
         </Link>
 
         <nav className="hidden items-center gap-1 sm:flex">
