@@ -27,19 +27,17 @@ export default function Home() {
           </p>
         </Link>
 
-        <div className="cursor-not-allowed rounded-2xl border-2 border-surface-raised bg-surface/60 px-6 py-5 text-left opacity-60">
-          <div className="flex items-center gap-2">
-            <span className="font-display text-xl font-bold text-ink-100">
-              Play online with friends
-            </span>
-            <span className="rounded-full bg-surface-raised px-2 py-0.5 font-mono text-[10px] uppercase tracking-widest text-ink-500">
-              Phase 2
-            </span>
-          </div>
+        <Link
+          href="/rooms"
+          className="rounded-2xl border-2 border-truth bg-truth/10 px-6 py-5 text-left transition hover:bg-truth/20"
+        >
+          <span className="font-display text-xl font-bold text-ink-100">
+            Play online with friends
+          </span>
           <p className="mt-1 text-sm text-ink-500">
-            Rooms, live chat, and voice — coming next.
+            Rooms, live chat, and (soon) voice. Requires an account.
           </p>
-        </div>
+        </Link>
       </div>
     </main>
   );

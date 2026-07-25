@@ -486,6 +486,27 @@ begin
 end;
 $$;
 
+-- ----------------------------------------------------------------------------
+-- Realtime — lets the room chat/member-list UI subscribe to live changes.
+-- Wrapped in a check so re-running this file doesn't error if already added.
+-- ----------------------------------------------------------------------------
+do $$
+begin
+  if not exists (
+    select 1 from pg_publication_tables
+    where pubname = 'supabase_realtime' and tablename = 'chat_messages'
+  ) then
+    alter publication supabase_realtime add table public.chat_messages;
+  end if;
+
+  if not exists (
+    select 1 from pg_publication_tables
+    where pubname = 'supabase_realtime' and tablename = 'room_memberships'
+  ) then
+    alter publication supabase_realtime add table public.room_memberships;
+  end if;
+end $$;
+
 -- ============================================================================
 -- End of schema.
 -- ============================================================================
