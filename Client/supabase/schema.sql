@@ -44,7 +44,7 @@ create policy "users update own profile"
 create or replace function public.handle_new_user()
 returns trigger
 language plpgsql
-security definer set search_path = public
+security definer set search_path = public, extensions
 as $$
 begin
   insert into public.profiles (id, display_name, accepted_terms_at)
@@ -220,7 +220,7 @@ create or replace function public.report_threshold() returns int
 create or replace function public.handle_new_report()
 returns trigger
 language plpgsql
-security definer set search_path = public
+security definer set search_path = public, extensions
 as $$
 begin
   update public.chat_messages
@@ -361,7 +361,7 @@ create or replace function public.create_room(
 )
 returns public.rooms
 language plpgsql
-security definer set search_path = public
+security definer set search_path = public, extensions
 as $$
 declare
   new_room public.rooms;
@@ -412,7 +412,7 @@ create or replace function public.join_room(
 )
 returns public.rooms
 language plpgsql
-security definer set search_path = public
+security definer set search_path = public, extensions
 as $$
 declare
   target public.rooms;
