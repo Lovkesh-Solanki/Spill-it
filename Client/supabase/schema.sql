@@ -116,15 +116,40 @@ create table if not exists public.room_memberships (
 
 alter table public.room_memberships enable row level security;
 
+-- Self-referencing "am I a member of this room" checks inside a policy ON
+-- room_memberships itself cause infinite recursion (the subquery re-triggers
+-- the same policy). Routing the check through a security-definer function
+-- breaks the loop — this is the standard fix for this exact Postgres RLS
+-- gotcha.
+create or replace function public.is_room_member(p_room_id uuid, p_user_id uuid)
+returns boolean
+language sql
+security definer
+set search_path = public, extensions
+stable
+as $$
+  select exists (
+    select 1 from public.room_memberships
+    where room_id = p_room_id and user_id = p_user_id
+  );
+$$;
+
 drop policy if exists "members see their room's membership list" on public.room_memberships;
 create policy "members see their room's membership list"
   on public.room_memberships for select
-  using (
-    exists (
-      select 1 from public.room_memberships m
-      where m.room_id = room_memberships.room_id and m.user_id = auth.uid()
-    )
-  );
+  using (public.is_room_member(room_id, auth.uid()));
+
+-- rooms_public is security_invoker = true, so it still enforces public.rooms'
+-- own RLS underneath — the owner-only policy above means a non-owner member
+-- got zero rows back from rooms_public and the room page treated that as
+-- "room doesn't exist" (404), even though they're a legitimate member. This
+-- adds a second, permissive SELECT policy for members specifically; it's
+-- placed here (not up next to the other rooms policies) because it depends
+-- on is_room_member(), which has to exist first.
+drop policy if exists "members can view their rooms" on public.rooms;
+create policy "members can view their rooms"
+  on public.rooms for select
+  using (public.is_room_member(id, auth.uid()));
 
 drop policy if exists "room creator can update/kick memberships" on public.room_memberships;
 create policy "room creator can update/kick memberships"
