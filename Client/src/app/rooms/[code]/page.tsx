@@ -2,6 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import ChatPanel from "@/components/rooms/ChatPanel";
 import MemberList from "@/components/rooms/MemberList";
+import LeaveRoomButton from "@/components/rooms/LeaveRoomButton";
 
 export default async function RoomPage({
   params,
@@ -64,6 +65,7 @@ export default async function RoomPage({
             {room.verified_only ? " · Verified members only" : ""}
           </p>
         </div>
+        <LeaveRoomButton roomId={room.id} />
       </div>
 
       <div className="mt-6 grid flex-1 grid-cols-1 gap-6 md:grid-cols-[1fr_260px]">

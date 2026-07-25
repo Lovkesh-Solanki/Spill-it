@@ -66,6 +66,7 @@ export default async function RootLayout({
       .single();
     displayName = profile?.display_name ?? null;
   }
+  const email = user?.email ?? null;
 
   return (
     <html
@@ -77,7 +78,7 @@ export default async function RootLayout({
         <ThemeProvider>
           <ThemeParticles />
           <div className="relative z-10 flex min-h-full flex-col flex-1">
-            <Navbar user={displayName ? { displayName } : null} />
+            <Navbar user={displayName ? { displayName, email } : null} />
             <div className="flex flex-1 flex-col">{children}</div>
           </div>
         </ThemeProvider>

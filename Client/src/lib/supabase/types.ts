@@ -192,6 +192,10 @@ export type Database = {
         };
         Returns: Database["public"]["Tables"]["rooms"]["Row"];
       };
+      delete_own_account: {
+        Args: Record<string, never>;
+        Returns: void;
+      };
     };
   };
 };

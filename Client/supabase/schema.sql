@@ -512,6 +512,98 @@ end;
 $$;
 
 -- ----------------------------------------------------------------------------
+-- leave_room — a plain delete from room_memberships (allowed by the "members
+-- can leave" policy above) is enough for an ordinary member. It's NOT enough
+-- when the creator leaves: the room would be left with no owner, and
+-- "owners manage their rooms" would then block anyone (including Supabase
+-- itself via cascade rules) from cleanly handing it off. This RPC handles
+-- both cases atomically:
+--   - creator leaves, other members remain -> ownership passes to whoever
+--     has been in the room longest (oldest joined_at)
+--   - creator leaves and was the last member -> the room is deleted outright
+--     (cascades to memberships/chat/reports/sessions via existing FKs)
+--   - non-creator leaves -> same as before, just removes their membership
+-- ----------------------------------------------------------------------------
+create or replace function public.leave_room(p_room_id uuid)
+returns void
+language plpgsql
+security definer set search_path = public, extensions
+as $$
+declare
+  caller_role text;
+  next_owner uuid;
+begin
+  if auth.uid() is null then
+    raise exception 'must be signed in to leave a room';
+  end if;
+
+  select role into caller_role
+  from public.room_memberships
+  where room_id = p_room_id and user_id = auth.uid();
+
+  if caller_role is null then
+    raise exception 'you are not a member of this room';
+  end if;
+
+  if caller_role = 'creator' then
+    select user_id into next_owner
+    from public.room_memberships
+    where room_id = p_room_id and user_id <> auth.uid()
+    order by joined_at asc
+    limit 1;
+
+    if next_owner is null then
+      -- last person in the room — nothing to hand off to, so the room goes too
+      delete from public.rooms where id = p_room_id;
+    else
+      update public.rooms set owner_id = next_owner where id = p_room_id;
+      update public.room_memberships set role = 'creator'
+        where room_id = p_room_id and user_id = next_owner;
+      delete from public.room_memberships
+        where room_id = p_room_id and user_id = auth.uid();
+    end if;
+  else
+    delete from public.room_memberships
+      where room_id = p_room_id and user_id = auth.uid();
+  end if;
+end;
+$$;
+
+grant execute on function public.leave_room(uuid) to authenticated;
+
+-- ----------------------------------------------------------------------------
+-- Account self-service — lets a signed-in user permanently delete their own
+-- account in one call. Deleting a row from auth.users isn't something the
+-- normal "authenticated" role can do directly (Supabase locks that schema
+-- down), so this function runs as security definer (effectively as the
+-- table owner) but only ever operates on auth.uid() — never an id supplied
+-- by the caller — so there's no way to use it to delete anyone else.
+--
+-- Deleting the auth.users row cascades to public.profiles (FK: profiles.id
+-- references auth.users(id) on delete cascade), which in turn cascades to
+-- rooms owned by that user, their room_memberships, chat_messages, reports,
+-- game_sessions, players, and prompt_logs via the FKs defined earlier in
+-- this file — so this one delete is enough to clean up everything.
+-- ----------------------------------------------------------------------------
+create or replace function public.delete_own_account()
+returns void
+language plpgsql
+security definer set search_path = public, extensions, auth
+as $$
+begin
+  if auth.uid() is null then
+    raise exception 'must be signed in to delete your account';
+  end if;
+
+  delete from auth.users where id = auth.uid();
+end;
+$$;
+
+-- Only signed-in users may call this, and only for themselves (enforced
+-- inside the function body via auth.uid(), not by this grant).
+grant execute on function public.delete_own_account() to authenticated;
+
+-- ----------------------------------------------------------------------------
 -- Realtime — lets the room chat/member-list UI subscribe to live changes.
 -- Wrapped in a check so re-running this file doesn't error if already added.
 -- ----------------------------------------------------------------------------

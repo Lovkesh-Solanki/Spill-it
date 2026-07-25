@@ -33,6 +33,14 @@ export async function createRoomAction(
   if (error) return { error: error.message };
   redirect(`/rooms/${data.code}`);
 }
+
+export async function leaveRoomAction(roomId: string): Promise<RoomActionState> {
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("leave_room", { p_room_id: roomId });
+
+  if (error) return { error: error.message };
+  redirect("/rooms");
+}
 export async function joinRoomAction(
   _prev: RoomActionState,
   formData: FormData
