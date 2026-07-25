@@ -109,11 +109,17 @@ create policy "owners manage their rooms"
   with check (auth.uid() = owner_id);
 
 -- Safe view — this is what the client actually queries to list/look up rooms.
+-- host_mode is appended LAST, not inserted where it logically belongs next
+-- to the other room-setting columns — CREATE OR REPLACE VIEW only allows
+-- adding new columns at the end of the list; putting it anywhere else
+-- shifts every column after it and Postgres reads that as trying to rename
+-- them (that's the exact error this caused the first time around).
 create or replace view public.rooms_public
 with (security_invoker = true) as
 select
-  id, code, name, is_open, verified_only, size_bracket, host_mode, owner_id, expiry_at, created_at,
-  (password_hash is not null) as has_password
+  id, code, name, is_open, verified_only, size_bracket, owner_id, expiry_at, created_at,
+  (password_hash is not null) as has_password,
+  host_mode
 from public.rooms;
 
 -- ----------------------------------------------------------------------------
