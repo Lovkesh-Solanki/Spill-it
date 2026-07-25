@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { createRoomAction, joinRoomAction, type RoomActionState } from "@/app/rooms/actions";
+import InfoTooltip from "@/components/shared/InfoTooltip";
 
 const BRACKETS = [
   { value: "2", label: "2 players" },
@@ -10,6 +11,26 @@ const BRACKETS = [
   { value: "10-25", label: "10–25 players" },
   { value: "25+", label: "25+ (up to 50)" },
 ];
+
+const HOST_MODES = [
+  {
+    value: "host_controlled",
+    label: "Host-controlled",
+    tooltip:
+      "Only the room creator can spin the bottle / advance turns, like running a party. Everyone else just watches and answers when it's their turn.",
+  },
+  {
+    value: "turn_based",
+    label: "Turn-based",
+    tooltip:
+      "Whoever's turn it currently is controls their own spin/choice/resolve. Nobody else can act out of turn.",
+  },
+  {
+    value: "open",
+    label: "Open",
+    tooltip: "Anyone in the room can spin or advance the game at any time, for anyone.",
+  },
+] as const;
 
 const initialState: RoomActionState = null;
 
@@ -90,6 +111,32 @@ export default function RoomForms() {
             <input type="checkbox" name="verified_only" className="h-4 w-4 accent-dare" />
             Only allow email-verified members
           </label>
+
+          <fieldset>
+            <legend className="font-mono text-xs uppercase tracking-widest text-ink-500">
+              Game host mode
+            </legend>
+            <div className="mt-2 flex flex-col gap-2">
+              {HOST_MODES.map((mode) => (
+                <label
+                  key={mode.value}
+                  className="flex cursor-pointer items-center gap-3 rounded-xl border border-surface-raised px-3 py-2.5 text-sm text-ink-400 has-[:checked]:border-dare has-[:checked]:bg-dare/10 has-[:checked]:text-ink-100"
+                >
+                  <input
+                    type="radio"
+                    name="host_mode"
+                    value={mode.value}
+                    defaultChecked={mode.value === "host_controlled"}
+                    className="h-4 w-4 accent-dare"
+                  />
+                  <span className="flex items-center">
+                    {mode.label}
+                    <InfoTooltip text={mode.tooltip} />
+                  </span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
 
           {createState?.error && (
             <p className="text-sm text-dare">{createState.error}</p>

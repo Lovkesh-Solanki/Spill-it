@@ -76,10 +76,26 @@ create table if not exists public.rooms (
   is_open boolean not null default true,
   verified_only boolean not null default false, -- creator can require email-verified members
   size_bracket text not null check (size_bracket in ('2','3-5','5-10','10-25','25+')),
+  -- host_controlled: only the creator can spin/advance turns.
+  -- turn_based: whoever's turn it is controls their own spin/choice/resolve.
+  -- open: anyone in the room can spin/advance, for anyone.
+  -- Also doubles as who's allowed to start a game session in the first
+  -- place (see startGameAction) — host_controlled/turn_based both mean
+  -- "creator only" for starting, since turn order doesn't exist yet before
+  -- a session is created.
+  host_mode text not null default 'host_controlled'
+    check (host_mode in ('host_controlled','turn_based','open')),
   owner_id uuid not null references public.profiles(id) on delete cascade,
   expiry_at timestamptz, -- null = no expiry until explicit delete
   created_at timestamptz not null default now()
 );
+
+-- Backfills the column for a database where schema.sql already ran before
+-- host_mode existed — CREATE TABLE IF NOT EXISTS alone won't add it.
+alter table public.rooms add column if not exists host_mode text not null default 'host_controlled';
+alter table public.rooms drop constraint if exists rooms_host_mode_check;
+alter table public.rooms add constraint rooms_host_mode_check
+  check (host_mode in ('host_controlled','turn_based','open'));
 
 alter table public.rooms enable row level security;
 
@@ -96,7 +112,7 @@ create policy "owners manage their rooms"
 create or replace view public.rooms_public
 with (security_invoker = true) as
 select
-  id, code, name, is_open, verified_only, size_bracket, owner_id, expiry_at, created_at,
+  id, code, name, is_open, verified_only, size_bracket, host_mode, owner_id, expiry_at, created_at,
   (password_hash is not null) as has_password
 from public.rooms;
 
@@ -382,7 +398,8 @@ create or replace function public.create_room(
   p_name text,
   p_password text, -- pass null/empty for an open room
   p_size_bracket text,
-  p_verified_only boolean default false
+  p_verified_only boolean default false,
+  p_host_mode text default 'host_controlled'
 )
 returns public.rooms
 language plpgsql
@@ -395,7 +412,11 @@ begin
     raise exception 'must be signed in to create a room';
   end if;
 
-  insert into public.rooms (code, name, password_hash, is_open, verified_only, size_bracket, owner_id)
+  if p_host_mode not in ('host_controlled','turn_based','open') then
+    raise exception 'invalid host_mode';
+  end if;
+
+  insert into public.rooms (code, name, password_hash, is_open, verified_only, size_bracket, host_mode, owner_id)
   values (
     public.generate_room_code(),
     p_name,
@@ -404,6 +425,7 @@ begin
     true,
     p_verified_only,
     p_size_bracket,
+    p_host_mode,
     auth.uid()
   )
   returning * into new_room;

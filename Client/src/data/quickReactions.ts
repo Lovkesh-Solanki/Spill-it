@@ -1,0 +1,111 @@
+export type QuickReactionCategory = {
+  id: string;
+  label: string;
+  emoji: string;
+  messages: string[];
+};
+
+export const QUICK_REACTIONS: QuickReactionCategory[] = [
+  {
+    id: "funny",
+    label: "Funny",
+    emoji: "😂",
+    messages: [
+      "LMAOO",
+      "I can't-",
+      "dead 💀",
+      "not you doing that",
+      "he really said that 😭",
+      "this is sending me",
+      "why is this so funny",
+      "stop it 😂",
+      "I'm crying",
+      "no because why is that accurate",
+    ],
+  },
+  {
+    id: "shocked",
+    label: "Shocked",
+    emoji: "😱",
+    messages: [
+      "WAIT WHAT",
+      "no way",
+      "excuse me??",
+      "I did NOT expect that",
+      "the way I gasped",
+      "hold on— what",
+      "that's insane",
+      "I'm SHOOK",
+      "since when??",
+      "okay that's wild",
+    ],
+  },
+  {
+    id: "hype",
+    label: "Hype",
+    emoji: "🔥",
+    messages: [
+      "DO IT DO IT DO IT",
+      "let's gooo",
+      "yesss finally",
+      "this is the content I signed up for",
+      "we love to see it",
+      "GO OFF",
+      "no hesitation, let's see it",
+      "chaos mode activated",
+      "the crowd demands it",
+      "spill it 🍾",
+    ],
+  },
+  {
+    id: "sweet",
+    label: "Sweet",
+    emoji: "❤️",
+    messages: [
+      "aww that's cute",
+      "okay that's actually sweet",
+      "wholesome moment",
+      "not this being wholesome",
+      "protect this energy",
+      "that's precious",
+      "my heart",
+      "so soft omg",
+      "love that for you",
+      "genuinely sweet answer",
+    ],
+  },
+  {
+    id: "teasing",
+    label: "Teasing",
+    emoji: "😏",
+    messages: [
+      "oh really now?",
+      "sure, sure 👀",
+      "the tea is HOT",
+      "spill more",
+      "we see you",
+      "suspicious...",
+      "okay but who is it though",
+      "receipts?",
+      "I'm listening 👀",
+      "go on...",
+    ],
+  },
+  {
+    id: "cringe",
+    label: "Cringe",
+    emoji: "😬",
+    messages: [
+      "the second-hand embarrassment",
+      "I felt that",
+      "oof",
+      "not the silence 💀",
+      "awkward but okay",
+      "big yikes",
+      "the discomfort is real",
+      "we've all been there",
+      "painfully relatable",
+      "why did I feel that",
+    ],
+  },
+];

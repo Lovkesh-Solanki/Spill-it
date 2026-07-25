@@ -8,6 +8,7 @@
 
 export type Difficulty = "children" | "teens" | "adult" | "spicy";
 export type SizeBracket = "2" | "3-5" | "5-10" | "10-25" | "25+";
+export type HostMode = "host_controlled" | "turn_based" | "open";
 
 export type Database = {
   public: {
@@ -37,6 +38,7 @@ export type Database = {
           is_open: boolean;
           verified_only: boolean;
           size_bracket: SizeBracket;
+          host_mode: HostMode;
           owner_id: string;
           expiry_at: string | null;
           created_at: string;
@@ -166,6 +168,7 @@ export type Database = {
           is_open: boolean;
           verified_only: boolean;
           size_bracket: SizeBracket;
+          host_mode: HostMode;
           owner_id: string;
           expiry_at: string | null;
           created_at: string;
@@ -181,6 +184,7 @@ export type Database = {
           p_password: string | null;
           p_size_bracket: SizeBracket;
           p_verified_only?: boolean;
+          p_host_mode?: HostMode;
         };
         Returns: Database["public"]["Tables"]["rooms"]["Row"];
       };
@@ -191,6 +195,10 @@ export type Database = {
           p_nickname?: string | null;
         };
         Returns: Database["public"]["Tables"]["rooms"]["Row"];
+      };
+      leave_room: {
+        Args: { p_room_id: string };
+        Returns: void;
       };
       delete_own_account: {
         Args: Record<string, never>;

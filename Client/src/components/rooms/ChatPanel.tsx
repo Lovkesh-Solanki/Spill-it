@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { QUICK_REACTIONS } from "@/data/quickReactions";
 
 type Message = {
   id: string;
@@ -34,6 +35,8 @@ export default function ChatPanel({
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
   const [reportingId, setReportingId] = useState<string | null>(null);
+  const [reactionsOpen, setReactionsOpen] = useState(false);
+  const [reactionCategory, setReactionCategory] = useState(QUICK_REACTIONS[0].id);
   const bottomRef = useRef<HTMLDivElement>(null);
   const supabase = createClient();
 
@@ -100,10 +103,9 @@ export default function ChatPanel({
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages.length]);
 
-  async function sendMessage(e: React.FormEvent) {
-    e.preventDefault();
-    const content = draft.trim();
-    if (!content) return;
+  async function sendContent(content: string) {
+    const trimmed = content.trim();
+    if (!trimmed) return;
     setSending(true);
     // Selecting the inserted row back lets us show it the moment the insert
     // itself completes, rather than waiting for the realtime broadcast to
@@ -112,14 +114,26 @@ export default function ChatPanel({
     // still dedupes by id when its own echo of this same row arrives.
     const { data, error } = await supabase
       .from("chat_messages")
-      .insert({ room_id: roomId, user_id: currentUserId, content })
+      .insert({ room_id: roomId, user_id: currentUserId, content: trimmed })
       .select("id, user_id, content, sent_at")
       .single();
     setSending(false);
     if (!error && data) {
-      setDraft("");
       setMessages((prev) => (prev.some((m) => m.id === data.id) ? prev : [...prev, data]));
     }
+    return !error;
+  }
+
+  async function sendMessage(e: React.FormEvent) {
+    e.preventDefault();
+    if (!draft.trim()) return;
+    const ok = await sendContent(draft);
+    if (ok) setDraft("");
+  }
+
+  async function sendReaction(text: string) {
+    setReactionsOpen(false);
+    await sendContent(text);
   }
 
   async function submitReport(messageId: string, category: string) {
@@ -184,7 +198,52 @@ export default function ChatPanel({
         <div ref={bottomRef} />
       </div>
 
-      <form onSubmit={sendMessage} className="flex gap-2 border-t border-surface-raised p-3">
+      <form onSubmit={sendMessage} className="relative flex gap-2 border-t border-surface-raised p-3">
+        {reactionsOpen && (
+          <div className="absolute bottom-full left-3 mb-2 w-72 rounded-2xl border border-surface-raised bg-void-deep p-3 shadow-xl">
+            <div className="flex flex-wrap gap-1">
+              {QUICK_REACTIONS.map((cat) => (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => setReactionCategory(cat.id)}
+                  className={`rounded-full px-2.5 py-1 text-xs transition ${
+                    reactionCategory === cat.id
+                      ? "bg-truth text-void-deep"
+                      : "bg-surface text-ink-400 hover:text-ink-100"
+                  }`}
+                >
+                  {cat.emoji} {cat.label}
+                </button>
+              ))}
+            </div>
+            <div className="mt-2 flex max-h-48 flex-wrap gap-1.5 overflow-y-auto">
+              {QUICK_REACTIONS.find((c) => c.id === reactionCategory)?.messages.map((msg) => (
+                <button
+                  key={msg}
+                  type="button"
+                  onClick={() => sendReaction(msg)}
+                  className="rounded-full border border-surface-raised px-2.5 py-1 text-xs text-ink-100 hover:border-truth hover:bg-truth/10"
+                >
+                  {msg}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+        <button
+          type="button"
+          onClick={() => setReactionsOpen((v) => !v)}
+          aria-label="Quick reactions"
+          aria-expanded={reactionsOpen}
+          className={`shrink-0 rounded-xl border px-3 text-lg transition ${
+            reactionsOpen
+              ? "border-truth bg-truth/10 text-truth"
+              : "border-surface-raised text-ink-500 hover:border-ink-700 hover:text-ink-100"
+          }`}
+        >
+          ⚡
+        </button>
         <input
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
