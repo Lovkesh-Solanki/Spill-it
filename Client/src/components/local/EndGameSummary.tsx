@@ -5,14 +5,16 @@ import { highestForfeitPlayer } from "@/lib/gameEngine";
 
 interface Props {
   players: Player[];
-  onPunish: () => void;
-  onNewGame: () => void;
+  onPunish?: () => void;
+  onNewGame?: () => void;
+  readOnly?: boolean; // online mode: true for everyone except whoever drives the game
 }
 
 export default function EndGameSummary({
   players,
   onPunish,
   onNewGame,
+  readOnly = false,
 }: Props) {
   const sorted = [...players].sort((a, b) => b.forfeits - a.forfeits);
   const hasForfeits = sorted.some((p) => p.forfeits > 0);
@@ -53,23 +55,27 @@ export default function EndGameSummary({
             <span className="font-semibold text-spicy">{loser.name}</span>{" "}
             racked up the most forfeits. One more dare, on the house?
           </p>
-          <button
-            type="button"
-            onClick={onPunish}
-            className="mt-4 rounded-xl bg-spicy px-6 py-3 font-display font-bold text-void-deep transition hover:brightness-95"
-          >
-            Punish {loser.name}
-          </button>
+          {!readOnly && onPunish && (
+            <button
+              type="button"
+              onClick={onPunish}
+              className="mt-4 rounded-xl bg-spicy px-6 py-3 font-display font-bold text-void-deep transition hover:brightness-95"
+            >
+              Punish {loser.name}
+            </button>
+          )}
         </div>
       )}
 
-      <button
-        type="button"
-        onClick={onNewGame}
-        className="mt-8 w-full rounded-xl border border-surface-raised py-3 font-display font-semibold text-ink-400 transition hover:border-ink-700 hover:text-ink-100"
-      >
-        New game
-      </button>
+      {!readOnly && onNewGame && (
+        <button
+          type="button"
+          onClick={onNewGame}
+          className="mt-8 w-full rounded-xl border border-surface-raised py-3 font-display font-semibold text-ink-400 transition hover:border-ink-700 hover:text-ink-100"
+        >
+          New game
+        </button>
+      )}
     </div>
   );
 }

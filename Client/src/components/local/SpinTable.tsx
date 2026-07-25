@@ -10,6 +10,7 @@ interface Props {
   onSpin: () => void;
   onLanded: () => void;
   turnCount: number;
+  disabled?: boolean; // online mode: true when it isn't this client's turn to drive the game
 }
 
 const SIZE = 400;
@@ -24,6 +25,7 @@ export default function SpinTable({
   onSpin,
   onLanded,
   turnCount,
+  disabled = false,
 }: Props) {
   const [rotation, setRotation] = useState(0);
   const rotationRef = useRef(0);
@@ -211,10 +213,10 @@ export default function SpinTable({
         <button
           type="button"
           onClick={onSpin}
-          disabled={!!selectedPlayerId}
+          disabled={!!selectedPlayerId || disabled}
           className="mt-6 rounded-full bg-truth px-10 py-4 font-display text-lg font-bold text-void-deep transition enabled:hover:bg-truth-dim disabled:cursor-not-allowed disabled:opacity-40"
         >
-          {selectedPlayerId ? "Spinning…" : "Spin the bottle"}
+          {selectedPlayerId ? "Spinning…" : disabled ? "Waiting for your turn…" : "Spin the bottle"}
         </button>
       )}
     </div>

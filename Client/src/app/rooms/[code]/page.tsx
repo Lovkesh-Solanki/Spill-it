@@ -4,6 +4,7 @@ import ChatPanel from "@/components/rooms/ChatPanel";
 import MemberList from "@/components/rooms/MemberList";
 import LeaveRoomButton from "@/components/rooms/LeaveRoomButton";
 import StartGamePanel from "@/components/rooms/StartGamePanel";
+import OnlineGameBoard from "@/components/game/OnlineGameBoard";
 
 const HOST_MODE_LABEL: Record<string, string> = {
   host_controlled: "Host-controlled",
@@ -68,6 +69,13 @@ export default async function RoomPage({
     .limit(1)
     .maybeSingle();
 
+  const { data: sessionPlayers } = latestSession
+    ? await supabase
+        .from("players")
+        .select("id, name, user_id, forfeit_count")
+        .eq("session_id", latestSession.id)
+    : { data: null };
+
   const nicknameByUserId = Object.fromEntries(
     (members ?? []).map((m) => [m.user_id, m.nickname])
   );
@@ -93,25 +101,17 @@ export default async function RoomPage({
       </div>
 
       <div className="mt-6">
-        {latestSession ? (
-          <div className="rounded-2xl border border-truth/40 bg-truth/10 p-4">
-            <p className="font-mono text-xs uppercase tracking-widest text-truth">
-              Game session started
-            </p>
-            <p className="mt-1 text-sm text-ink-100">
-              Difficulty: <span className="font-semibold">{latestSession.difficulty}</span>
-              {" · "}
-              Tie-break:{" "}
-              <span className="font-semibold">
-                {latestSession.tie_breaker_mode === "coin_toss" ? "Coin toss" : "Random"}
-              </span>
-            </p>
-            <p className="mt-2 text-xs text-ink-500">
-              The session and player list are saved — the live synced
-              spin/prompt screen for online rooms is the next build, not
-              wired up yet.
-            </p>
-          </div>
+        {latestSession && sessionPlayers && sessionPlayers.length > 0 ? (
+          <OnlineGameBoard
+            roomId={room.id}
+            sessionId={latestSession.id}
+            difficulty={latestSession.difficulty}
+            tieBreakerMode={latestSession.tie_breaker_mode}
+            hostMode={room.host_mode}
+            dbPlayers={sessionPlayers}
+            currentUserId={user.id}
+            isHost={membership.role === "creator"}
+          />
         ) : (
           <StartGamePanel roomId={room.id} canStart={canStart} />
         )}

@@ -6,9 +6,10 @@ interface Props {
   active: ActivePrompt;
   onResolve: (result: "done" | "forfeit") => void;
   onReport: () => void;
+  readOnly?: boolean; // online mode: true for everyone except the active player
 }
 
-export default function PromptCard({ active, onResolve, onReport }: Props) {
+export default function PromptCard({ active, onResolve, onReport, readOnly = false }: Props) {
   const { player, prompt, isPunish } = active;
   const isTruth = prompt.type === "truth";
 
@@ -43,22 +44,28 @@ export default function PromptCard({ active, onResolve, onReport }: Props) {
         </p>
       </div>
 
-      <div className="mt-8 grid w-full grid-cols-2 gap-3">
-        <button
-          type="button"
-          onClick={() => onResolve("done")}
-          className="rounded-xl bg-truth py-4 font-display font-bold text-void-deep transition hover:bg-truth-dim"
-        >
-          Done
-        </button>
-        <button
-          type="button"
-          onClick={() => onResolve("forfeit")}
-          className="rounded-xl border-2 border-dare py-4 font-display font-bold text-dare transition hover:bg-dare/10"
-        >
-          Forfeit
-        </button>
-      </div>
+      {readOnly ? (
+        <p className="mt-8 text-sm text-ink-500">
+          Waiting for {player.name} to respond…
+        </p>
+      ) : (
+        <div className="mt-8 grid w-full grid-cols-2 gap-3">
+          <button
+            type="button"
+            onClick={() => onResolve("done")}
+            className="rounded-xl bg-truth py-4 font-display font-bold text-void-deep transition hover:bg-truth-dim"
+          >
+            Done
+          </button>
+          <button
+            type="button"
+            onClick={() => onResolve("forfeit")}
+            className="rounded-xl border-2 border-dare py-4 font-display font-bold text-dare transition hover:bg-dare/10"
+          >
+            Forfeit
+          </button>
+        </div>
+      )}
 
       <button
         type="button"
