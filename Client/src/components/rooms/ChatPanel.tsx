@@ -30,11 +30,42 @@ export default function ChatPanel({
   nicknameByUserId: Record<string, string>;
 }) {
   const [messages, setMessages] = useState(initialMessages);
+  const [nicknameMap, setNicknameMap] = useState(nicknameByUserId);
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
   const [reportingId, setReportingId] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const supabase = createClient();
+
+  useEffect(() => {
+    // nicknameByUserId is only a snapshot from when this page first loaded —
+    // anyone who joins the room afterward is missing from it, which showed
+    // up as their messages being labeled "Player" for anyone who already
+    // had the room open. Mirrors MemberList's own subscription below:
+    // refetch-on-any-change rather than hand-patching each event type,
+    // since room membership is capped at 50 and this stays cheap regardless.
+    const channel = supabase
+      .channel(`room:${roomId}:member-nicknames`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "room_memberships", filter: `room_id=eq.${roomId}` },
+        async () => {
+          const { data } = await supabase
+            .from("room_memberships")
+            .select("user_id, nickname")
+            .eq("room_id", roomId);
+          if (data) {
+            setNicknameMap(Object.fromEntries(data.map((m) => [m.user_id, m.nickname])));
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- supabase client is stable per mount, roomId is the real dependency
+  }, [roomId]);
 
   useEffect(() => {
     const channel = supabase
@@ -74,11 +105,21 @@ export default function ChatPanel({
     const content = draft.trim();
     if (!content) return;
     setSending(true);
-    const { error } = await supabase
+    // Selecting the inserted row back lets us show it the moment the insert
+    // itself completes, rather than waiting for the realtime broadcast to
+    // round-trip back down the websocket on top of that — that extra hop
+    // was the source of the noticeable send delay. The subscription above
+    // still dedupes by id when its own echo of this same row arrives.
+    const { data, error } = await supabase
       .from("chat_messages")
-      .insert({ room_id: roomId, user_id: currentUserId, content });
+      .insert({ room_id: roomId, user_id: currentUserId, content })
+      .select("id, user_id, content, sent_at")
+      .single();
     setSending(false);
-    if (!error) setDraft("");
+    if (!error && data) {
+      setDraft("");
+      setMessages((prev) => (prev.some((m) => m.id === data.id) ? prev : [...prev, data]));
+    }
   }
 
   async function submitReport(messageId: string, category: string) {
@@ -109,7 +150,7 @@ export default function ChatPanel({
               >
                 {!mine && (
                   <p className="mb-0.5 font-mono text-[10px] uppercase tracking-widest opacity-70">
-                    {nicknameByUserId[m.user_id] ?? "Player"}
+                    {nicknameMap[m.user_id] ?? "Player"}
                   </p>
                 )}
                 {m.content}
