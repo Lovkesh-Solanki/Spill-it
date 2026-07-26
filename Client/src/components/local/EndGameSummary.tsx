@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import type { Player } from "@/lib/types";
 import { highestForfeitPlayer } from "@/lib/gameEngine";
 
@@ -8,6 +9,7 @@ interface Props {
   onPunish?: () => void;
   onNewGame?: () => void;
   readOnly?: boolean; // online mode: true for everyone except whoever drives the game
+  newGameSlot?: ReactNode; // online mode: full restart UI (force/vote), replaces the plain button below
 }
 
 export default function EndGameSummary({
@@ -15,6 +17,7 @@ export default function EndGameSummary({
   onPunish,
   onNewGame,
   readOnly = false,
+  newGameSlot,
 }: Props) {
   const sorted = [...players].sort((a, b) => b.forfeits - a.forfeits);
   const hasForfeits = sorted.some((p) => p.forfeits > 0);
@@ -67,7 +70,7 @@ export default function EndGameSummary({
         </div>
       )}
 
-      {!readOnly && onNewGame && (
+      {!readOnly && (newGameSlot ?? (onNewGame && (
         <button
           type="button"
           onClick={onNewGame}
@@ -75,7 +78,7 @@ export default function EndGameSummary({
         >
           New game
         </button>
-      )}
+      )))}
     </div>
   );
 }

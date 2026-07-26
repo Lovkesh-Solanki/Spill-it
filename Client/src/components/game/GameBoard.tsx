@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import type { GameAction } from "@/lib/gameEngine";
 import type { GameState } from "@/lib/types";
 import SpinTable from "@/components/local/SpinTable";
@@ -103,8 +103,8 @@ export function PromptZone({
   myPlayerId?: string;
   canDriveFlow?: boolean;
   onNewGame?: () => void;
-  newGameSlot?: React.ReactNode;
-  emptyState?: React.ReactNode;
+  newGameSlot?: ReactNode;
+  emptyState?: ReactNode;
 }) {
   const [reportOpen, setReportOpen] = useState(false);
 
