@@ -70,7 +70,7 @@ export default function EndGameSummary({
         </div>
       )}
 
-      {!readOnly && (newGameSlot ?? (onNewGame && (
+      {newGameSlot ?? (!readOnly && onNewGame && (
         <button
           type="button"
           onClick={onNewGame}
@@ -78,7 +78,7 @@ export default function EndGameSummary({
         >
           New game
         </button>
-      )))}
+      ))}
     </div>
   );
 }

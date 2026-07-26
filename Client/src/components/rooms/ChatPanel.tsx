@@ -19,6 +19,13 @@ const REPORT_CATEGORIES = [
   { id: "other", label: "Other" },
 ];
 
+function formatTime(iso: string) {
+  // Locale-default formatting rather than a hardcoded "h:mm AM/PM" — shows
+  // 24h "14:08" or 12h "2:08 PM" depending on the reader's own system
+  // locale/settings, same as every native chat app does.
+  return new Date(iso).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+}
+
 export default function ChatPanel({
   roomId,
   currentUserId,
@@ -146,8 +153,8 @@ export default function ChatPanel({
   }
 
   return (
-    <div className="flex min-h-[420px] flex-col rounded-2xl border border-surface-raised bg-surface">
-      <div className="flex-1 space-y-3 overflow-y-auto p-4">
+    <div className="flex h-full min-h-0 flex-col rounded-2xl border border-surface-raised bg-surface">
+      <div className="min-h-0 flex-1 space-y-3 overflow-y-auto p-4">
         {messages.length === 0 && (
           <p className="text-center text-sm text-ink-700">
             No messages yet — say hi.
@@ -169,15 +176,18 @@ export default function ChatPanel({
                 )}
                 {m.content}
               </div>
-              {!mine && (
-                <button
-                  type="button"
-                  onClick={() => setReportingId(reportingId === m.id ? null : m.id)}
-                  className="mt-0.5 text-[10px] text-ink-700 opacity-0 transition hover:text-dare group-hover:opacity-100"
-                >
-                  Report
-                </button>
-              )}
+              <div className="mt-0.5 flex items-center gap-2">
+                <span className="text-[10px] text-ink-700">{formatTime(m.sent_at)}</span>
+                {!mine && (
+                  <button
+                    type="button"
+                    onClick={() => setReportingId(reportingId === m.id ? null : m.id)}
+                    className="text-[10px] text-ink-700 opacity-0 transition hover:text-dare group-hover:opacity-100"
+                  >
+                    Report
+                  </button>
+                )}
+              </div>
               {reportingId === m.id && (
                 <div className="mt-1 flex flex-wrap gap-1.5">
                   {REPORT_CATEGORIES.map((c) => (

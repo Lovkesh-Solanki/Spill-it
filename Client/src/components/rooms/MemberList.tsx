@@ -20,6 +20,7 @@ export default function MemberList({
   isOwner: boolean;
 }) {
   const [members, setMembers] = useState(initialMembers);
+  const [actionError, setActionError] = useState<string | null>(null);
   const supabase = createClient();
 
   useEffect(() => {
@@ -50,19 +51,35 @@ export default function MemberList({
   }, [roomId]);
 
   async function toggleMute(userId: string, current: boolean) {
-    await supabase
+    setActionError(null);
+    const { data, error } = await supabase
       .from("room_memberships")
       .update({ is_muted: !current })
       .eq("room_id", roomId)
-      .eq("user_id", userId);
+      .eq("user_id", userId)
+      .select();
+    // A denied-by-RLS update returns no error and no rows, not a thrown
+    // error — Supabase's client can't tell "permission denied" apart from
+    // "matched nothing" any other way, so an empty data array is the actual
+    // signal to check for.
+    if (error) setActionError(error.message);
+    else if (!data || data.length === 0) {
+      setActionError("That didn't go through — you may not have permission.");
+    }
   }
 
   async function kick(userId: string) {
-    await supabase
+    setActionError(null);
+    const { data, error } = await supabase
       .from("room_memberships")
       .delete()
       .eq("room_id", roomId)
-      .eq("user_id", userId);
+      .eq("user_id", userId)
+      .select();
+    if (error) setActionError(error.message);
+    else if (!data || data.length === 0) {
+      setActionError("That didn't go through — you may not have permission.");
+    }
   }
 
   return (
@@ -70,6 +87,7 @@ export default function MemberList({
       <p className="font-mono text-xs uppercase tracking-widest text-ink-500">
         Players ({members.length})
       </p>
+      {actionError && <p className="mt-2 text-xs text-dare">{actionError}</p>}
       <ul className="mt-3 flex flex-col gap-2">
         {members.map((m) => (
           <li

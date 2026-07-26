@@ -133,16 +133,16 @@ export default function RestartControls({
   // threshold is crossed, creating duplicate sessions.
   useEffect(() => {
     if (!proposal || proposal.initiatorId !== currentUserId) return;
-    if (passed) {
-      void resolve(true);
-      return;
-    }
     const msLeft = proposal.deadline - Date.now();
-    if (msLeft <= 0) {
-      void resolve(false);
-      return;
-    }
-    const timeout = setTimeout(() => void resolve(false), msLeft);
+    // Every path routes through setTimeout, even the "resolve immediately"
+    // cases (delay 0) — calling resolve() straight from the effect body
+    // means its setState calls run synchronously as part of the effect
+    // itself, which is exactly what react-hooks/set-state-in-effect flags.
+    // Deferring via setTimeout (matching what the "still waiting" case
+    // already did) pushes it to its own task instead.
+    const delay = passed || msLeft <= 0 ? 0 : msLeft;
+    const shouldPass = passed;
+    const timeout = setTimeout(() => void resolve(shouldPass), delay);
     return () => clearTimeout(timeout);
     // eslint-disable-next-line react-hooks/exhaustive-deps -- resolve() reads the live proposal via proposalRef intentionally, not via deps
   }, [proposal, passed, currentUserId]);

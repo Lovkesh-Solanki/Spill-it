@@ -120,6 +120,7 @@ export default async function RoomPage({
         <div className="min-h-0 lg:overflow-hidden">
           {latestSession && sessionPlayers && sessionPlayers.length > 0 ? (
             <OnlineGameBoard
+              key={latestSession.id}
               roomId={room.id}
               sessionId={latestSession.id}
               difficulty={latestSession.difficulty}
