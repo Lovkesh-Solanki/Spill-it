@@ -48,8 +48,8 @@ See **[`Client/README.md`](./Client/README.md)** for local setup, environment va
 ## Roadmap
 
 - [x] **Phase 1** — Local mode: bottle spin, prompt bank, scoreboard, punish mechanic, report form, theming
-- [x] **Phase 2** — Accounts, rooms, text chat *(in progress)*
-- [ ] **Phase 3** — Voice chat (WebRTC), room persistence/expiry, password-protected rooms
+- [x] **Phase 2** — Accounts, rooms, text chat 
+- [ ] **Phase 3** — Voice chat (WebRTC), room persistence/expiry, password-protected rooms *(in progress)*
 - [ ] **Phase 4** — Free-tier LLM-generated prompt variety, monetization, native app
 
 ## License
