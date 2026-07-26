@@ -650,6 +650,18 @@ begin
   ) then
     alter publication supabase_realtime add table public.room_memberships;
   end if;
+
+  -- Missed originally: the room page's "waiting for host to start" view
+  -- subscribes to game_sessions INSERTs, but Postgres was never actually
+  -- publishing changes on this table, so that subscription sat listening
+  -- for events that could never arrive. Not a timing/race bug — it just
+  -- wasn't wired up.
+  if not exists (
+    select 1 from pg_publication_tables
+    where pubname = 'supabase_realtime' and tablename = 'game_sessions'
+  ) then
+    alter publication supabase_realtime add table public.game_sessions;
+  end if;
 end $$;
 
 -- ============================================================================

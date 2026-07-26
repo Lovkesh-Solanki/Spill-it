@@ -121,10 +121,11 @@ export default function SpinTable({
                 </text>
                 <text
                   x={x}
-                  y={y + 44}
+                  y={y + 46}
                   textAnchor="middle"
-                  fontSize={12}
-                  fill="var(--color-ink-500)"
+                  fontSize={15}
+                  fontWeight={600}
+                  fill="var(--color-ink-100)"
                   fontFamily="var(--font-sans)"
                 >
                   {p.name.length > 10 ? `${p.name.slice(0, 9)}…` : p.name}

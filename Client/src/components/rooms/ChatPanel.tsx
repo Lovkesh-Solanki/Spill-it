@@ -153,7 +153,7 @@ export default function ChatPanel({
   }
 
   return (
-    <div className="flex h-full min-h-0 flex-col rounded-2xl border border-surface-raised bg-surface">
+    <div className="flex h-[500px] min-h-0 flex-col rounded-2xl border border-surface-raised bg-surface lg:h-full">
       <div className="min-h-0 flex-1 space-y-3 overflow-y-auto p-4">
         {messages.length === 0 && (
           <p className="text-center text-sm text-ink-700">
@@ -259,12 +259,12 @@ export default function ChatPanel({
           onChange={(e) => setDraft(e.target.value)}
           maxLength={1000}
           placeholder="Say something…"
-          className="flex-1 rounded-xl border border-surface-raised bg-void px-3 py-2 text-sm text-ink-100 placeholder:text-ink-700 outline-none focus:border-truth"
+          className="min-w-0 flex-1 rounded-xl border border-surface-raised bg-void px-3 py-2 text-sm text-ink-100 placeholder:text-ink-700 outline-none focus:border-truth"
         />
         <button
           type="submit"
           disabled={sending || !draft.trim()}
-          className="rounded-xl bg-truth px-4 py-2 font-display text-sm font-bold text-void-deep transition enabled:hover:bg-truth-dim disabled:opacity-40"
+          className="shrink-0 rounded-xl bg-truth px-4 py-2 font-display text-sm font-bold text-void-deep transition enabled:hover:bg-truth-dim disabled:opacity-40"
         >
           Send
         </button>
