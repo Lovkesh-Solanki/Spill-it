@@ -5,6 +5,7 @@ import MemberList from "@/components/rooms/MemberList";
 import LeaveRoomButton from "@/components/rooms/LeaveRoomButton";
 import StartGamePanel from "@/components/rooms/StartGamePanel";
 import OnlineGameBoard from "@/components/game/OnlineGameBoard";
+import GameSessionWatcher from "@/components/rooms/GameSessionWatcher";
 
 const HOST_MODE_LABEL: Record<string, string> = {
   host_controlled: "Host-controlled",
@@ -83,12 +84,20 @@ export default async function RoomPage({
   // host_controlled and turn_based both mean "creator only" for starting —
   // see the matching comment in startGameAction for why.
   const canStart = room.host_mode === "open" || membership.role === "creator";
+  const totalMembers = members?.length ?? sessionPlayers?.length ?? 1;
 
   return (
-    <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col px-4 py-8">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-surface-raised pb-4">
+    // h-[calc(...)] + overflow-hidden caps this page to the viewport (minus
+    // the navbar) instead of letting it grow tall and scroll the whole
+    // window — each zone below scrolls internally instead. 100dvh accounts
+    // for mobile browser chrome better than 100vh; the fixed px offset is
+    // an estimate of the navbar's rendered height (py-3 + logo + border).
+    <div className="mx-auto flex h-[calc(100dvh-4.5rem)] w-full max-w-[1500px] flex-col overflow-hidden px-4 py-4">
+      <GameSessionWatcher roomId={room.id} />
+
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-surface-raised pb-3">
         <div>
-          <h1 className="font-display text-2xl font-bold text-ink-100">
+          <h1 className="font-display text-xl font-bold text-ink-100 sm:text-2xl">
             {room.name}
           </h1>
           <p className="mt-1 font-mono text-xs uppercase tracking-widest text-ink-500">
@@ -100,35 +109,49 @@ export default async function RoomPage({
         <LeaveRoomButton roomId={room.id} />
       </div>
 
-      <div className="mt-6">
-        {latestSession && sessionPlayers && sessionPlayers.length > 0 ? (
-          <OnlineGameBoard
-            roomId={room.id}
-            sessionId={latestSession.id}
-            difficulty={latestSession.difficulty}
-            tieBreakerMode={latestSession.tie_breaker_mode}
-            hostMode={room.host_mode}
-            dbPlayers={sessionPlayers}
-            currentUserId={user.id}
-            isHost={membership.role === "creator"}
-          />
-        ) : (
-          <StartGamePanel roomId={room.id} canStart={canStart} />
-        )}
-      </div>
+      {/*
+        Three zones on wide screens: game | prompt | chat+members — all
+        visible at once, nothing needs scrolling the page itself to reach.
+        OnlineGameBoard internally splits into the first two (game/prompt)
+        sub-columns; this grid provides the outer game-area/chat split plus
+        the responsive single-column fallback below the lg breakpoint.
+      */}
+      <div className="mt-4 grid min-h-0 flex-1 grid-cols-1 gap-4 overflow-y-auto lg:grid-cols-[minmax(0,1fr)_320px] lg:overflow-hidden">
+        <div className="min-h-0 lg:overflow-hidden">
+          {latestSession && sessionPlayers && sessionPlayers.length > 0 ? (
+            <OnlineGameBoard
+              roomId={room.id}
+              sessionId={latestSession.id}
+              difficulty={latestSession.difficulty}
+              tieBreakerMode={latestSession.tie_breaker_mode}
+              hostMode={room.host_mode}
+              dbPlayers={sessionPlayers}
+              currentUserId={user.id}
+              isHost={membership.role === "creator"}
+              totalMembers={totalMembers}
+            />
+          ) : (
+            <StartGamePanel roomId={room.id} canStart={canStart} />
+          )}
+        </div>
 
-      <div className="mt-6 grid flex-1 grid-cols-1 gap-6 md:grid-cols-[1fr_260px]">
-        <ChatPanel
-          roomId={room.id}
-          currentUserId={user.id}
-          initialMessages={messages ?? []}
-          nicknameByUserId={nicknameByUserId}
-        />
-        <MemberList
-          roomId={room.id}
-          initialMembers={members ?? []}
-          isOwner={membership.role === "creator"}
-        />
+        <div className="flex min-h-0 flex-col gap-4 lg:overflow-hidden">
+          <div className="min-h-0 flex-1 lg:overflow-hidden">
+            <ChatPanel
+              roomId={room.id}
+              currentUserId={user.id}
+              initialMessages={messages ?? []}
+              nicknameByUserId={nicknameByUserId}
+            />
+          </div>
+          <div className="max-h-[40%] shrink-0 overflow-y-auto">
+            <MemberList
+              roomId={room.id}
+              initialMembers={members ?? []}
+              isOwner={membership.role === "creator"}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );

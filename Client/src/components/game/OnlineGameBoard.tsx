@@ -4,7 +4,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { createInitialState, gameReducer, type GameAction } from "@/lib/gameEngine";
 import type { Difficulty, GameState, Player } from "@/lib/types";
-import GameBoard from "@/components/game/GameBoard";
+import { EndGameButton, GameZone, PromptZone } from "@/components/game/GameBoard";
+import RestartControls from "@/components/game/RestartControls";
 
 type DbPlayer = {
   id: string;
@@ -29,6 +30,7 @@ export default function OnlineGameBoard({
   dbPlayers,
   currentUserId,
   isHost,
+  totalMembers,
 }: {
   roomId: string;
   sessionId: string;
@@ -38,6 +40,7 @@ export default function OnlineGameBoard({
   dbPlayers: DbPlayer[];
   currentUserId: string;
   isHost: boolean;
+  totalMembers: number;
 }) {
   const supabase = createClient();
 
@@ -48,7 +51,9 @@ export default function OnlineGameBoard({
     () => dbPlayers.map((p) => ({ id: p.id, name: p.name, forfeits: p.forfeit_count })),
     [dbPlayers]
   );
-  const myPlayerId = dbPlayers.find((p) => p.user_id === currentUserId)?.id;
+  const myPlayer = dbPlayers.find((p) => p.user_id === currentUserId);
+  const myPlayerId = myPlayer?.id;
+  const currentUserName = myPlayer?.name ?? "You";
 
   const [game, setGame] = useState<GameState>(() =>
     createInitialState(initialPlayers, difficulty, tieBreakerMode === "coin_toss" ? "coin" : "random")
@@ -90,8 +95,8 @@ export default function OnlineGameBoard({
     [sessionId, supabase]
   );
 
-  // The single function GameBoard calls for every action, regardless of
-  // host/guest — it doesn't know or care which one it's running on.
+  // The single function GameBoard's pieces call for every action, regardless
+  // of host/guest — it doesn't know or care which one it's running on.
   const dispatch = useCallback(
     (action: GameAction) => {
       if (isHost) {
@@ -162,13 +167,48 @@ export default function OnlineGameBoard({
           !game.selectedPlayerId &&
           game.players[game.turnCount % game.players.length]?.id === myPlayerId)));
 
+  // host_controlled and turn_based both mean "creator only" for starting a
+  // *fresh* session (mirrors startGameAction's own rule) — "Start a vote" is
+  // always offered as the democratic alternative regardless of host_mode.
+  const canForceStart = hostMode === "open" || isHost;
+
   return (
-    <GameBoard
-      game={game}
-      dispatch={dispatch}
-      myPlayerId={myPlayerId}
-      canDriveFlow={canDriveFlow}
-      showEndGameButton={hostMode !== "turn_based" ? isHost || hostMode === "open" : canDriveFlow}
-    />
+    <div className="grid h-full min-h-0 gap-4 lg:grid-cols-[minmax(0,280px)_minmax(0,1fr)]">
+      <div className="flex min-h-0 flex-col overflow-y-auto rounded-2xl border border-surface-raised bg-surface/40 px-4">
+        <EndGameButton
+          dispatch={dispatch}
+          canDriveFlow={canDriveFlow}
+          show={
+            game.screen !== "ended" &&
+            (hostMode !== "turn_based" ? isHost || hostMode === "open" : canDriveFlow)
+          }
+        />
+        <GameZone game={game} dispatch={dispatch} canDriveFlow={canDriveFlow} />
+      </div>
+      <div className="flex min-h-0 flex-col items-center justify-center overflow-y-auto rounded-2xl border border-surface-raised bg-surface/40 p-4">
+        <PromptZone
+          game={game}
+          dispatch={dispatch}
+          myPlayerId={myPlayerId}
+          canDriveFlow={canDriveFlow}
+          newGameSlot={
+            <RestartControls
+              roomId={roomId}
+              canForceStart={canForceStart}
+              currentUserId={currentUserId}
+              currentUserName={currentUserName}
+              totalMembers={totalMembers}
+              defaultDifficulty={difficulty}
+              defaultTieBreaker={tieBreakerMode}
+            />
+          }
+          emptyState={
+            <p className="text-sm text-ink-500">
+              {game.selectedPlayerId ? "Spinning…" : "Waiting for the next spin…"}
+            </p>
+          }
+        />
+      </div>
+    </div>
   );
 }
