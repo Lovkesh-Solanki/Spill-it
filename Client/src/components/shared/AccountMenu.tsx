@@ -61,8 +61,25 @@ export default function AccountMenu({ displayName, email }: Props) {
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-haspopup="true"
+        aria-label={`Account menu for ${displayName}`}
         className="flex items-center gap-1.5 rounded-full px-2 py-1 font-mono text-xs uppercase tracking-widest text-ink-400 transition hover:text-ink-100"
       >
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 16 16"
+          aria-hidden="true"
+          className="shrink-0 sm:hidden"
+        >
+          <circle cx="8" cy="5.5" r="3" fill="currentColor" />
+          <path
+            d="M2 14c0-3 2.7-5 6-5s6 2 6 5"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            fill="none"
+            strokeLinecap="round"
+          />
+        </svg>
         <span className="hidden sm:inline">{displayName}</span>
         <svg
           width="10"

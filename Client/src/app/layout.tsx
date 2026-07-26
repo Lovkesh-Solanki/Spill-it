@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Inter, Space_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/contexts/ThemeContext";
@@ -42,6 +42,28 @@ export const metadata: Metadata = {
       "Spin, choose, spill. A browser Truth or Dare game with AI-flavored prompts, forfeit tracking, and a punish mechanic.",
     images: ["/og-image.png"],
   },
+  appleWebApp: {
+    // Full-screen, no Safari chrome, when added to an iOS home screen.
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "SpillIt",
+  },
+  formatDetection: {
+    // Stops iOS/Android from auto-linking things like room codes as phone
+    // numbers — cosmetic, but it reads as sloppy when it happens.
+    telephone: false,
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#14101f",
+  colorScheme: "dark",
+  // viewport-fit=cover lets the app draw behind the iPhone notch/home
+  // indicator instead of leaving an ugly hard-edged gap there, since this
+  // is meant to feel like an installed app, not a browser tab.
+  viewportFit: "cover",
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default async function RootLayout({

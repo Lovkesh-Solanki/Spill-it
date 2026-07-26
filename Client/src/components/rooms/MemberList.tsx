@@ -106,7 +106,7 @@ export default function MemberList({
                 <button
                   type="button"
                   onClick={() => toggleMute(m.user_id, m.is_muted)}
-                  className="rounded-lg px-1.5 py-1 text-[10px] text-ink-500 hover:text-ink-100"
+                  className="min-h-[32px] rounded-lg px-2.5 py-1.5 text-xs text-ink-500 hover:text-ink-100"
                   title={m.is_muted ? "Unmute" : "Mute"}
                 >
                   {m.is_muted ? "Unmute" : "Mute"}
@@ -114,7 +114,7 @@ export default function MemberList({
                 <button
                   type="button"
                   onClick={() => kick(m.user_id)}
-                  className="rounded-lg px-1.5 py-1 text-[10px] text-dare hover:text-dare-dim"
+                  className="min-h-[32px] rounded-lg px-2.5 py-1.5 text-xs text-dare hover:text-dare-dim"
                 >
                   Kick
                 </button>

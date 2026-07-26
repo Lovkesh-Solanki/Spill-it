@@ -5,7 +5,11 @@ import { NextResponse, type NextRequest } from "next/server";
 // server-rendered pages can end up reading a stale/expired session even
 // though the browser's client-side session is still valid. This is the
 // standard pattern from Supabase's Next.js SSR docs — not SpillIt-specific.
-export async function middleware(request: NextRequest) {
+//
+// Renamed from middleware.ts per Next.js 16: the file convention (and the
+// exported function name) changed from "middleware" to "proxy". Same
+// behavior, same matcher config — just the new name Next.js looks for.
+export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(

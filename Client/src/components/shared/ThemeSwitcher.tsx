@@ -51,11 +51,11 @@ export default function ThemeSwitcher() {
         className="flex items-center gap-2 rounded-full border border-surface-raised bg-surface/80 px-3 py-1.5 font-mono text-xs uppercase tracking-widest text-ink-400 backdrop-blur transition hover:border-ink-700 hover:text-ink-100"
       >
         <span
-          className="h-2.5 w-2.5 rounded-full"
+          className="h-2.5 w-2.5 shrink-0 rounded-full"
           style={{ backgroundColor: "var(--color-dare)" }}
           aria-hidden
         />
-        {theme.name}
+        <span className="hidden sm:inline">{theme.name}</span>
       </button>
 
       {open && (
