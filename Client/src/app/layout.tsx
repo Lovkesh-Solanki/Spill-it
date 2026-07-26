@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import Navbar from "@/components/shared/Navbar";
 import ThemeParticles from "@/components/shared/ThemeParticles";
 import { createClient } from "@/lib/supabase/server";
+import { URL } from "node:url";
 
 const bricolage = Bricolage_Grotesque({
   variable: "--font-bricolage",
@@ -24,6 +25,7 @@ const spaceMono = Space_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase : new URL("https://spillit-tord.vercel.app") ,
   title: "SpillIt — Truth or Dare",
   description:
     "Spin, choose, spill. A browser Truth or Dare game with AI-flavored prompts, forfeit tracking, and a punish mechanic.",
